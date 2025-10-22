@@ -1,44 +1,69 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const size = 48;
+const restartBtn = document.getElementById("restart");
+const statusText = document.getElementById("status");
 
-let map = [
-  ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#"],
-  ["#", " ", " ", " ", " ", " ", "#", " ", " ", "#"],
-  ["#", " ", "$", " ", " ", ".", "#", " ", " ", "#"],
-  ["#", " ", " ", "@", " ", " ", "#", " ", " ", "#"],
-  ["#", " ", " ", " ", "$", ".", "#", " ", " ", "#"],
-  ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#"]
+let level = [
+  "##########",
+  "#        #",
+  "#  $. .  #",
+  "#  $$@   #",
+  "#   .    #",
+  "##########"
 ];
 
-let player = { x: 3, y: 3 };
+let map = [];
+let player = {x: 0, y: 0};
+
+function resetLevel() {
+  map = level.map(r => r.split(""));
+  for (let y = 0; y < map.length; y++) {
+    for (let x = 0; x < map[y].length; x++) {
+      if (map[y][x] === "@") {
+        player = {x, y};
+      }
+    }
+  }
+  statusText.textContent = "";
+  draw();
+}
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[y].length; x++) {
       const tile = map[y][x];
       const posX = x * size;
       const posY = y * size;
 
+      // Nền
+      ctx.fillStyle = "#f4f1d0";
+      ctx.fillRect(posX, posY, size, size);
+
       if (tile === "#") {
-        ctx.fillStyle = "#81c784";
+        ctx.fillStyle = "#555";
         ctx.fillRect(posX, posY, size, size);
       } else if (tile === ".") {
-        ctx.fillStyle = "#aed581";
+        ctx.fillStyle = "#e57373";
         ctx.beginPath();
-        ctx.arc(posX + size / 2, posY + size / 2, 6, 0, Math.PI * 2);
+        ctx.arc(posX + size/2, posY + size/2, 6, 0, Math.PI * 2);
         ctx.fill();
       } else if (tile === "$") {
         ctx.fillStyle = "#f9a825";
-        ctx.fillRect(posX + 10, posY + 10, size - 20, size - 20);
+        ctx.fillRect(posX + 8, posY + 8, size - 16, size - 16);
+      } else if (tile === "*") {
+        ctx.fillStyle = "#4caf50";
+        ctx.fillRect(posX + 8, posY + 8, size - 16, size - 16);
       }
     }
   }
 
-  ctx.fillStyle = "#000000";
+  // Vẽ người chơi
+  ctx.fillStyle = "#1976d2";
   ctx.beginPath();
-  ctx.arc(player.x * size + size / 2, player.y * size + size / 2, 12, 0, Math.PI * 2);
+  ctx.arc(player.x * size + size/2, player.y * size + size/2, 12, 0, Math.PI * 2);
   ctx.fill();
 }
 
@@ -50,15 +75,19 @@ function move(dx, dy) {
   const beyondY = ny + dy;
 
   if (target === " " || target === ".") {
+    map[player.y][player.x] = " ";
     player.x = nx;
     player.y = ny;
-  } else if (target === "$") {
+    map[player.y][player.x] = "@";
+  } else if (target === "$" || target === "*") {
     const beyond = map[beyondY][beyondX];
     if (beyond === " " || beyond === ".") {
       map[ny][nx] = " ";
-      map[beyondY][beyondX] = "$";
+      map[beyondY][beyondX] = beyond === "." ? "*" : "$";
+      map[player.y][player.x] = " ";
       player.x = nx;
       player.y = ny;
+      map[player.y][player.x] = "@";
     }
   }
   checkWin();
@@ -66,13 +95,15 @@ function move(dx, dy) {
 }
 
 function checkWin() {
-  let done = true;
+  let win = true;
   for (let row of map) {
     for (let cell of row) {
-      if (cell === ".") done = false;
+      if (cell === ".") win = false;
     }
   }
-  if (done) setTimeout(() => alert("🎉 Bạn đã hoàn thành trò chơi!"), 100);
+  if (win) {
+    statusText.textContent = "🎉 Bạn đã thắng!";
+  }
 }
 
 document.addEventListener("keydown", e => {
@@ -82,4 +113,6 @@ document.addEventListener("keydown", e => {
   if (e.key === "ArrowRight") move(1, 0);
 });
 
-draw();
+restartBtn.addEventListener("click", resetLevel);
+
+resetLevel();
