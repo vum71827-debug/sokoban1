@@ -4,7 +4,7 @@ const size = 48;
 const restartBtn = document.getElementById("restart");
 const statusText = document.getElementById("status");
 
-let level = [
+const level = [
   "##########",
   "#        #",
   "#  $. .  #",
@@ -14,14 +14,14 @@ let level = [
 ];
 
 let map = [];
-let player = {x: 0, y: 0};
+let player = { x: 0, y: 0 };
 
 function resetLevel() {
-  map = level.map(r => r.split(""));
+  map = level.map(row => row.split(""));
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[y].length; x++) {
       if (map[y][x] === "@") {
-        player = {x, y};
+        player = { x, y };
       }
     }
   }
@@ -31,7 +31,6 @@ function resetLevel() {
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[y].length; x++) {
       const tile = map[y][x];
@@ -48,7 +47,7 @@ function draw() {
       } else if (tile === ".") {
         ctx.fillStyle = "#e57373";
         ctx.beginPath();
-        ctx.arc(posX + size/2, posY + size/2, 6, 0, Math.PI * 2);
+        ctx.arc(posX + size / 2, posY + size / 2, 6, 0, Math.PI * 2);
         ctx.fill();
       } else if (tile === "$") {
         ctx.fillStyle = "#f9a825";
@@ -63,7 +62,7 @@ function draw() {
   // Vẽ người chơi
   ctx.fillStyle = "#1976d2";
   ctx.beginPath();
-  ctx.arc(player.x * size + size/2, player.y * size + size/2, 12, 0, Math.PI * 2);
+  ctx.arc(player.x * size + size / 2, player.y * size + size / 2, 12, 0, Math.PI * 2);
   ctx.fill();
 }
 
@@ -75,33 +74,38 @@ function move(dx, dy) {
   const beyondY = ny + dy;
 
   if (target === " " || target === ".") {
-    map[player.y][player.x] = " ";
-    player.x = nx;
-    player.y = ny;
-    map[player.y][player.x] = "@";
+    updatePlayer(nx, ny);
   } else if (target === "$" || target === "*") {
     const beyond = map[beyondY][beyondX];
     if (beyond === " " || beyond === ".") {
-      map[ny][nx] = " ";
+      // Di chuyển thùng
       map[beyondY][beyondX] = beyond === "." ? "*" : "$";
-      map[player.y][player.x] = " ";
-      player.x = nx;
-      player.y = ny;
-      map[player.y][player.x] = "@";
+      map[ny][nx] = map[ny][nx] === "*" ? "." : " ";
+      updatePlayer(nx, ny);
     }
   }
-  checkWin();
+
   draw();
+  checkWin();
+}
+
+function updatePlayer(nx, ny) {
+  const onGoal = level[player.y][player.x] === ".";
+  map[player.y][player.x] = onGoal ? "." : " ";
+  player.x = nx;
+  player.y = ny;
+  map[player.y][player.x] = "@";
 }
 
 function checkWin() {
-  let win = true;
+  let won = true;
   for (let row of map) {
-    for (let cell of row) {
-      if (cell === ".") win = false;
+    if (row.includes(".")) {
+      won = false;
+      break;
     }
   }
-  if (win) {
+  if (won) {
     statusText.textContent = "🎉 Bạn đã thắng!";
   }
 }
