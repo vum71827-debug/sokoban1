@@ -23,24 +23,22 @@ function drawMap() {
       const posY = y * tileSize;
 
       if (tile === '#') {
-        ctx.fillStyle = '#81c784';
+        ctx.fillStyle = '#a5d6a7';
         ctx.fillRect(posX, posY, tileSize, tileSize);
       } else if (tile === '$') {
-        ctx.fillStyle = '#f9a825';
-        ctx.beginPath();
-        ctx.rect(posX + 8, posY + 8, 24, 24);
-        ctx.fill();
+        ctx.fillStyle = '#fbc02d';
+        ctx.fillRect(posX + 10, posY + 10, 20, 20);
       } else if (tile === '.') {
-        ctx.fillStyle = '#aed581';
+        ctx.fillStyle = '#81c784';
         ctx.beginPath();
         ctx.arc(posX + 20, posY + 20, 6, 0, 2 * Math.PI);
         ctx.fill();
       }
     }
   }
-  ctx.fillStyle = '#000';
+  ctx.fillStyle = '#1565c0';
   ctx.beginPath();
-  ctx.arc(player.x * tileSize + 20, player.y * tileSize + 20, 12, 0, Math.PI * 2);
+  ctx.arc(player.x * tileSize + 20, player.y * tileSize + 20, 10, 0, Math.PI * 2);
   ctx.fill();
 }
 
@@ -55,11 +53,13 @@ function move(dx, dy) {
   drawMap();
 }
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowUp') move(0, -1);
-  if (e.key === 'ArrowDown') move(0, 1);
-  if (e.key === 'ArrowLeft') move(-1, 0);
-  if (e.key === 'ArrowRight') move(1, 0);
+document.getElementById('up').addEventListener('click', () => move(0, -1));
+document.getElementById('down').addEventListener('click', () => move(0, 1));
+document.getElementById('left').addEventListener('click', () => move(-1, 0));
+document.getElementById('right').addEventListener('click', () => move(1, 0));
+
+document.getElementById('submit').addEventListener('click', () => {
+  alert('Bài tập Sokoban đã hoàn thành!');
 });
 
 drawMap();
