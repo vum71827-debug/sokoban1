@@ -1,24 +1,25 @@
 body {
-  background-color: #ffffff;
-  font-family: Arial, sans-serif;
+  background-color: #f9fff9;
+  font-family: "Segoe UI", sans-serif;
   text-align: center;
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 h1 {
   color: #2e7d32;
-  font-size: 26px;
+  font-size: 28px;
+  margin-bottom: 10px;
 }
 
 p {
-  margin-top: 10px;
-  color: #000000;
+  color: #000;
   font-size: 16px;
+  margin-top: 12px;
 }
 
 canvas {
   background-color: #f1f8e9;
-  border: 2px solid #2e7d32;
+  border: 3px solid #2e7d32;
   border-radius: 10px;
-  margin-top: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
